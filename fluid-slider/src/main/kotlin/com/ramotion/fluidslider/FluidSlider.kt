@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewOutlineProvider
 import android.view.animation.OvershootInterpolator
 import androidx.databinding.BindingAdapter
-import kotlinx.android.synthetic.main.main_activity.view.*
 import kotlin.math.*
 
 class FluidSlider @JvmOverloads constructor(
@@ -207,7 +206,7 @@ class FluidSlider @JvmOverloads constructor(
      */
     private fun setBubbleTextForDiscreteSlider() {
         val index = (position * (discreteTexts!!.lastIndex)).roundToInt()
-        fluidSlider.bubbleText = discreteTexts!![index]
+        bubbleText = discreteTexts!![index]
     }
 
     /**
