@@ -12,10 +12,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.view.animation.OvershootInterpolator
-import com.ramotion.fluidslider.FluidSlider.Size.NORMAL
-import com.ramotion.fluidslider.FluidSlider.Size.SMALL
+import androidx.databinding.BindingAdapter
+import kotlinx.android.synthetic.main.main_activity.view.*
 import kotlin.math.*
-
 
 class FluidSlider @JvmOverloads constructor(
         context: Context,
@@ -172,11 +171,54 @@ class FluidSlider @JvmOverloads constructor(
     var endText: String? = TEXT_END
 
     /**
+     * List of bubble texts for discrete slider.
+     */
+    var discreteTexts: List<String>? = null
+        set(list) {
+            if (!list.isNullOrEmpty()) {
+                field = list
+                startText = list[0]
+                endText = list[list.lastIndex]
+                setBubbleTextForDiscreteSlider()
+            } else {
+                field = null
+                startText = TEXT_START
+                endText = TEXT_END
+                bubbleText = null
+            }
+            invalidate()
+        }
+
+    /**
+     * A static methods in Java is required for a DataBinding.
+     * cf. 'Method 1: Object declaration' of
+     * https://medium.com/@thinkpanda_75045/defining-android-binding-adapter-in-kotlin-b08e82116704
+     */
+    object FluidSliderBindingAdapter {
+        @BindingAdapter("discrete_texts")
+        @JvmStatic
+        fun setDiscreteTexts(fluidSlider: FluidSlider, list: List<String>?) {
+            fluidSlider.discreteTexts = list
+        }
+    }
+
+    /**
+     * A common process called internally from setters of discreteTexts and position.
+     */
+    private fun setBubbleTextForDiscreteSlider() {
+        val index = (position * (discreteTexts!!.lastIndex)).roundToInt()
+        fluidSlider.bubbleText = discreteTexts!![index]
+    }
+
+    /**
      * Initial position of "bubble" in range form `0.0` to `1.0`.
      */
     var position = INITIAL_POSITION
         set(value) {
             field = max(0f, min(1f, value))
+            if (!discreteTexts.isNullOrEmpty()) {
+                setBubbleTextForDiscreteSlider()
+            }
             invalidate()
             positionListener?.invoke(field)
         }
@@ -609,5 +651,4 @@ class FluidSlider @JvmOverloads constructor(
         animation.duration = duration
         animation.start()
     }
-
 }
