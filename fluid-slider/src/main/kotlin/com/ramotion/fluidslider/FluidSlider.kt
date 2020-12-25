@@ -170,43 +170,33 @@ class FluidSlider @JvmOverloads constructor(
     var endText: String? = TEXT_END
 
     /**
-     * List of bubble texts for discrete slider.
-     */
-    var discreteTexts: List<String>? = null
-        set(list) {
-            if (!list.isNullOrEmpty()) {
-                field = list
-                startText = list[0]
-                endText = list[list.lastIndex]
-                setBubbleTextForDiscreteSlider()
-            } else {
-                field = null
-                startText = TEXT_START
-                endText = TEXT_END
-                bubbleText = null
-            }
-            invalidate()
-        }
-
-    /**
      * A static methods in Java is required for a DataBinding.
      * cf. 'Method 1: Object declaration' of
      * https://medium.com/@thinkpanda_75045/defining-android-binding-adapter-in-kotlin-b08e82116704
+     *
+     * In addition to that, in order to reflect changes of LiveData immediately, invoke View.invalidate() ASAP.
      */
     object FluidSliderBindingAdapter {
-        @BindingAdapter("discrete_texts")
+        @BindingAdapter("bubble_text")
         @JvmStatic
-        fun setDiscreteTexts(fluidSlider: FluidSlider, list: List<String>?) {
-            fluidSlider.discreteTexts = list
+        fun setBubbleText(fluidSlider: FluidSlider, bubbleText: String?) {
+            fluidSlider.bubbleText = bubbleText
+            fluidSlider.invalidate()
         }
-    }
 
-    /**
-     * A common process called internally from setters of discreteTexts and position.
-     */
-    private fun setBubbleTextForDiscreteSlider() {
-        val index = (position * (discreteTexts!!.lastIndex)).roundToInt()
-        bubbleText = discreteTexts!![index]
+        @BindingAdapter("start_text")
+        @JvmStatic
+        fun setStartText(fluidSlider: FluidSlider, startText: String?) {
+            fluidSlider.startText = startText
+            fluidSlider.invalidate()
+        }
+
+        @BindingAdapter("end_text")
+        @JvmStatic
+        fun setEndText(fluidSlider: FluidSlider, endText: String?) {
+            fluidSlider.endText = endText
+            fluidSlider.invalidate()
+        }
     }
 
     /**
@@ -215,9 +205,6 @@ class FluidSlider @JvmOverloads constructor(
     var position = INITIAL_POSITION
         set(value) {
             field = max(0f, min(1f, value))
-            if (!discreteTexts.isNullOrEmpty()) {
-                setBubbleTextForDiscreteSlider()
-            }
             invalidate()
             positionListener?.invoke(field)
         }
