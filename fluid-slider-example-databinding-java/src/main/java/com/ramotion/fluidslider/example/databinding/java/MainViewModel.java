@@ -38,14 +38,13 @@ public class MainViewModel extends ViewModel {
     }
 
     private final MutableLiveData<Float> mPosition;
+    public void setPosition(float position) {
+        mPosition.setValue(position);
+    }
 
     private final MediatorLiveData<String> mCurrent;
     public LiveData<String> getCurrent() {
         return mCurrent;
-    }
-
-    public void setPosition(float position) {
-        mPosition.setValue(position);
     }
 
     private int count;
