@@ -28,6 +28,7 @@ public class MainViewModel extends ViewModel {
     );
 
     private final MutableLiveData<List<String>> mList;
+    
     private final MutableLiveData<String> mStart;
     public LiveData<String> getStart() {
         return mStart;
